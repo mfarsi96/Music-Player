@@ -45,7 +45,7 @@ fun NavaPlayer() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen() // HomeScreen قبلی که لیست آهنگ‌ها رو نشون میداد
+                HomeScreen() 
             }
             composable(Screen.FullPlayer.route) {
                 FullPlayerScreen(navController = navController)

@@ -23,14 +23,11 @@ fun HomeScreen() {
     val audioList = viewModel.audioList
     val context = LocalContext.current
 
-    // تشخیص نوع مجوز بر اساس نسخه اندروید
     val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_AUDIO
     } else {
         Manifest.permission.READ_EXTERNAL_STORAGE
     }
-
-    // لانچر برای درخواست مجوز
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -39,7 +36,6 @@ fun HomeScreen() {
         }
     }
 
-    // بررسی اولیه (SideEffect برای اینکه فقط یک بار اجرا بشه)
     LaunchedEffect(Unit) {
         // اینجا ساده گرفتیم، در واقعیت باید چک کنی که مجوز داری یا نه
         // فعلاً فرض میکنیم اگر لیست خالیه درخواست بدیم
@@ -48,7 +44,6 @@ fun HomeScreen() {
 
     Scaffold(
         topBar = {
-            // هدر ساده
             Text(
                 text = "Nava Player",
                 style = MaterialTheme.typography.headlineMedium,
@@ -63,7 +58,6 @@ fun HomeScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Text("هیچ آهنگی پیدا نشد یا مجوز داده نشده!")
-                // دکمه تلاش مجدد رو هم میشه اینجا گذاشت
                 Button(onClick = { launcher.launch(permission) }, modifier = Modifier.padding(top = 60.dp)) {
                     Text("دریافت مجوز")
                 }
