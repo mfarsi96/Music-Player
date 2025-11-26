@@ -150,22 +150,24 @@ class PlayerController(context: Context) {
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             val controller = mediaController ?: return
 
-            // پیدا کردن آهنگ جدید از روی متادیتا و به‌روزرسانی وضعیت
+            // ۱. استخراج متادیتا
             val title = mediaItem?.mediaMetadata?.title?.toString()
             val artist = mediaItem?.mediaMetadata?.artist?.toString()
             val id = mediaItem?.mediaId?.toLongOrNull()
 
-            // فرض می‌کنیم اگر اطلاعات کامل بود، یک آبجکت Audio بسازیم (ایده‌آل نیست ولی برای شروع کار میکنه)
-            if (title != null && artist != null && id != null) {
-                // اگر می‌خواهید URI را هم به‌روز کنید، باید از controller.getCurrentMediaItem() استفاده کنید.
+            // ۲. استخراج URI: از mediaItem.requestMetadata.mediaUri استفاده می‌کنیم
+            val uri = mediaItem?.requestMetadata?.mediaUri
+
+            // ۳. آپدیت وضعیت
+            if (title != null && artist != null && id != null && uri != null) {
                 _playerState.update { currentState ->
                     currentState.copy(
                         currentAudio = Audio(
                             id = id,
-                            uri = mediaItem.requestMetadata.mediaUri ?: mediaItem.mediaId.let { /* fallback logic */ } as android.net.Uri, // URI دقیق باید استخراج شود
+                            uri = uri, // حالا مستقیماً از متغیر uri که از نوع Uri است استفاده می‌کنیم
                             title = title,
                             artist = artist,
-                            duration = controller.duration.toInt()
+                            duration = controller.duration
                         )
                     )
                 }

@@ -1,14 +1,33 @@
 package com.example.navaplayer.ui.screens.player
 
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,8 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.navaplayer.player.formatTime
 import org.koin.androidx.compose.koinViewModel
 
@@ -57,30 +78,48 @@ fun FullPlayerScreen(navController: NavController) {
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             // Placeholder برای کاور موزیک
-            Card(
-                modifier = Modifier.size(250.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            ) {
-                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                    Text("کاور آهنگ", style = MaterialTheme.typography.headlineLarge)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Card(
+                    modifier = Modifier.size(250.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                ) {
+                    // **جایگزینی Placeholder با AsyncImage از Coil**
+                    AsyncImage(
+                        model = state.currentAudio?.coverUri, // آدرس URI کاور
+                        contentDescription = "Album Cover",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
-
             Spacer(modifier = Modifier.height(32.dp))
 
             // اطلاعات آهنگ
-            Text(text = audio?.title ?: "بدون عنوان", style = MaterialTheme.typography.headlineMedium)
-            Text(text = audio?.artist ?: "خواننده ناشناس", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = audio?.title ?: "بدون عنوان",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text(
+                text = audio?.artist ?: "خواننده ناشناس",
+                style = MaterialTheme.typography.titleMedium
+            )
 
             Spacer(modifier = Modifier.height(40.dp))
 
             // دکمه‌های کنترل (Play/Pause)
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
                 // ۱. نوار پیشرفت (Seekbar)
                 Slider(
@@ -104,8 +143,14 @@ fun FullPlayerScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = formatTime(state.currentPosition), style = MaterialTheme.typography.bodySmall)
-                    Text(text = formatTime(state.duration), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        text = formatTime(state.currentPosition),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        text = formatTime(state.duration),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -114,11 +159,17 @@ fun FullPlayerScreen(navController: NavController) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 40.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 40.dp)
                 ) {
                     // دکمه قبلی
                     IconButton(onClick = { viewModel.skipToPrevious() }, enabled = state.isReady) {
-                        Icon(Icons.Filled.Phone, contentDescription = "Previous", modifier = Modifier.size(36.dp))
+                        Icon(
+                            Icons.Filled.Phone,
+                            contentDescription = "Previous",
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
 
                     // دکمه Play/Pause بزرگ
@@ -138,7 +189,11 @@ fun FullPlayerScreen(navController: NavController) {
 
                     // دکمه بعدی
                     IconButton(onClick = { viewModel.skipToNext() }, enabled = state.isReady) {
-                        Icon(Icons.Filled.KeyboardArrowUp, contentDescription = "Next", modifier = Modifier.size(36.dp))
+                        Icon(
+                            Icons.Filled.KeyboardArrowUp,
+                            contentDescription = "Next",
+                            modifier = Modifier.size(36.dp)
+                        )
                     }
                 }
             }

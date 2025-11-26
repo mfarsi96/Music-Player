@@ -7,5 +7,6 @@ data class Audio(
     val uri: Uri,
     val title: String,
     val artist: String,
-    val duration: Int
+    val duration: Long,
+    val coverUri: Uri? = null
 )
