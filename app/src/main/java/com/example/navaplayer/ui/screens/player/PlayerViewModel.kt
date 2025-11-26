@@ -14,5 +14,15 @@ class PlayerViewModel(private val controller: PlayerController) : ViewModel() {
         controller.togglePlayback()
     }
 
-    // بعداً متدهای seek و skip را اینجا اضافه می‌کنیم
+    fun skipToNext() {
+        controller.skipToNext()
+    }
+
+    fun skipToPrevious() {
+        controller.skipToPrevious()
+    }
+
+    fun seekTo(positionMs: Long) {
+        controller.seekTo(positionMs)
+    }
 }

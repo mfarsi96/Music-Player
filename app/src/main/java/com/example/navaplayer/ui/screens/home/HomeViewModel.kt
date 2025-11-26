@@ -31,8 +31,11 @@ class HomeViewModel(
     }
 
     // متد جدید برای پخش
-    fun playAudio(audio: Audio) {
-        playerController.playAudio(audio)
+    fun playAudio(
+        audioList: List<Audio>,
+        startIndex: Int
+    ) {
+        playerController.playPlaylist(audioList, startIndex)
     }
 
     override fun onCleared() {
