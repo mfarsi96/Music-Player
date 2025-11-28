@@ -33,6 +33,7 @@ class PlayerController(context: Context) {
     private val _playerState = MutableStateFlow(PlayerState())
     val playerState: StateFlow<PlayerState> = _playerState.asStateFlow()
 
+    private var currentPlaylist: List<Audio> = emptyList()
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var progressJob: Job? = null
 
@@ -57,6 +58,8 @@ class PlayerController(context: Context) {
     fun playPlaylist(audioList: List<Audio>, startIndex: Int) {
         val controller = mediaController ?: return
 
+        currentPlaylist = audioList
+
         // ۱. تبدیل لیست Audio به لیست MediaItem
         val mediaItems = audioList.map { audio ->
             MediaItem.Builder()
@@ -66,7 +69,6 @@ class PlayerController(context: Context) {
                     MediaMetadata.Builder()
                         .setTitle(audio.title)
                         .setArtist(audio.artist)
-                        .setSubtitle(audio.artist) // می‌توان از ساب‌تایتل برای Artist استفاده کرد
                         .build()
                 )
                 .build()
@@ -74,7 +76,6 @@ class PlayerController(context: Context) {
 
         // ۲. ارسال کل لیست به پلیر و مشخص کردن آهنگ شروع
         controller.setMediaItems(mediaItems, startIndex, 0)
-
         // ۳. دستور پخش
         controller.prepare()
         controller.play()
@@ -149,26 +150,19 @@ class PlayerController(context: Context) {
 
         override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
             val controller = mediaController ?: return
+            val currentIndex = controller.currentMediaItemIndex
 
             // ۱. استخراج متادیتا
-            val title = mediaItem?.mediaMetadata?.title?.toString()
-            val artist = mediaItem?.mediaMetadata?.artist?.toString()
-            val id = mediaItem?.mediaId?.toLongOrNull()
+            if (currentIndex >= 0 && currentIndex < currentPlaylist.size) {
+                // ۳. استخراج آبجکت Audio کامل (شامل Cover URI و ...)
+                val nextAudio = currentPlaylist[currentIndex]
 
-            // ۲. استخراج URI: از mediaItem.requestMetadata.mediaUri استفاده می‌کنیم
-            val uri = mediaItem?.requestMetadata?.mediaUri
-
-            // ۳. آپدیت وضعیت
-            if (title != null && artist != null && id != null && uri != null) {
+                // ۴. آپدیت وضعیت
                 _playerState.update { currentState ->
                     currentState.copy(
-                        currentAudio = Audio(
-                            id = id,
-                            uri = uri, // حالا مستقیماً از متغیر uri که از نوع Uri است استفاده می‌کنیم
-                            title = title,
-                            artist = artist,
-                            duration = controller.duration
-                        )
+                        currentAudio = nextAudio,
+                        // استفاده از .coerceAtLeast(0L) برای تضمین مثبت بودن مقدار duration
+                        duration = controller.duration.coerceAtLeast(0L)
                     )
                 }
             }
