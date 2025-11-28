@@ -5,7 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,11 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.navaplayer.ui.main.Screen
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun MiniPlayer(navController: NavController) {
-    val viewModel: PlayerViewModel = koinViewModel()
+fun MiniPlayer(navController: NavController, viewModel: PlayerViewModel) {
+
     // مشاهده وضعیت پلیر
     val playerState by viewModel.playerState.collectAsState()
 
@@ -31,7 +30,7 @@ fun MiniPlayer(navController: NavController) {
 
     // استفاده از AnimatedVisibility برای نمایش متحرک مینی‌پلیر
     AnimatedVisibility(
-        visible = playerState.currentAudio != null,
+        visible = playerState.currentAudio != null && navController.currentDestination?.route != Screen.FullPlayer.route,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
     ) {
@@ -54,7 +53,9 @@ fun MiniPlayer(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // نام آهنگ
-                Column(modifier = Modifier.weight(1f).padding(start = 8.dp)) {
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                     Text(
                         text = playerState.currentAudio?.title ?: "بدون آهنگ",
                         style = MaterialTheme.typography.bodyLarge,
@@ -70,7 +71,7 @@ fun MiniPlayer(navController: NavController) {
                 // دکمه Play/Pause
                 IconButton(onClick = { viewModel.togglePlayback() }) {
                     Icon(
-                        imageVector = if (playerState.isPlaying) Icons.Filled.Close else Icons.Filled.PlayArrow,
+                        imageVector = if (playerState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                         contentDescription = "Play/Pause"
                     )
                 }

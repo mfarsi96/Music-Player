@@ -4,11 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +22,8 @@ import com.example.navaplayer.ui.theme.NavaPlayerTheme
 import com.example.navaplayer.ui.main.Screen
 import com.example.navaplayer.ui.screens.player.FullPlayerScreen
 import com.example.navaplayer.ui.screens.player.MiniPlayer
+import com.example.navaplayer.ui.screens.player.PlayerViewModel
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,25 +39,30 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun NavaPlayer() {
+    val koinViewModel: PlayerViewModel = koinViewModel()
     val navController = rememberNavController()
+    val playerState by koinViewModel.playerState.collectAsState()
 
     Scaffold(
         // استفاده از BottomBar برای نگه داشتن مینی‌پلیر در تمام مسیرها
         contentWindowInsets = WindowInsets.navigationBars,
         bottomBar = {
-            MiniPlayer(navController = navController)
-        }
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            composable(Screen.Home.route) {
-                HomeScreen()
+            if (playerState.currentAudio != null) {
+                MiniPlayer(navController = navController, koinViewModel)
             }
-            composable(Screen.FullPlayer.route) {
-                FullPlayerScreen(navController = navController)
+        }
+    ) {
+        Box(Modifier.fillMaxSize().padding(it)){
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
+            ) {
+                composable(Screen.Home.route) {
+                    HomeScreen()
+                }
+                composable(Screen.FullPlayer.route) {
+                    FullPlayerScreen(navController = navController)
+                }
             }
         }
     }

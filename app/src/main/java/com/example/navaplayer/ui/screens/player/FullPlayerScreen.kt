@@ -66,7 +66,7 @@ fun FullPlayerScreen(navController: NavController) {
                     title = { Text(text = audio?.title ?: "Nava Player") },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Back")
                         }
                     },
                     // پس‌زمینه نوار بالا را نیز شفاف می‌کنیم
@@ -108,7 +108,7 @@ fun FullPlayerScreen(navController: NavController) {
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    Icons.Filled.KeyboardArrowUp, // آیکون پیش‌فرض
+                                    Icons.Filled.MusicNote, // آیکون پیش‌فرض
                                     contentDescription = "No Cover",
                                     modifier = Modifier.size(100.dp),
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -140,7 +140,28 @@ fun FullPlayerScreen(navController: NavController) {
                         valueRange = 0f..state.duration.toFloat(),
                         enabled = state.duration > 0,
                         modifier = Modifier.fillMaxWidth(),
-                        colors = SliderDefaults.colors(thumbColor = Color.White, activeTrackColor = Color.White)
+                        colors = SliderDefaults.colors(thumbColor = Color.White, activeTrackColor = Color.White),
+
+                        // NEW: تعریف کامپوزیت سفارشی برای دستگیره (Thumb)
+                        thumb = {
+                            // می‌توانید اینجا هر چیزی قرار دهید، مثلاً یک آیکون یا یک Composable پیچیده.
+                            Icon(
+                                imageVector = Icons.Filled.Circle, // استفاده از یک آیکون دایره‌ای
+                                contentDescription = "Playback Position",
+                                modifier = Modifier.size(16.dp), // اندازه مناسب برای دستگیره
+                                tint = MaterialTheme.colorScheme.secondary // رنگ دلخواه
+                            )
+
+                            // اگر می‌خواهید از یک لوگوی صوتی یا شکل موج ساده استفاده کنید:
+
+//                            Card(
+//                                modifier = Modifier.size(16.dp),
+//                                shape = MaterialTheme.shapes.extraSmall,
+//                                colors = CardDefaults.cardColors(containerColor = Color.Red),
+//                                elevation = CardDefaults.cardElevation(2.dp)
+//                            ) {}
+
+                        }
                     )
 
                     // نمایش زمان
@@ -162,7 +183,7 @@ fun FullPlayerScreen(navController: NavController) {
                     ) {
                         // ... (دکمه‌های Skip و Play/Pause قبلی) ...
                         IconButton(onClick = { viewModel.skipToPrevious() }, enabled = state.isReady) {
-                            Icon(Icons.Filled.Close, contentDescription = "Previous", modifier = Modifier.size(36.dp), tint = Color.White)
+                            Icon(Icons.Filled.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(36.dp), tint = Color.White)
                         }
 
                         Button(
@@ -174,7 +195,7 @@ fun FullPlayerScreen(navController: NavController) {
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             Icon(
-                                imageVector = if (state.isPlaying) Icons.Filled.PlayArrow else Icons.Filled.PlayArrow,
+                                imageVector = if (state.isPlaying) Icons.Filled.PlayArrow else Icons.Filled.Pause,
                                 contentDescription = "Play/Pause",
                                 modifier = Modifier.size(40.dp),
                                 tint = MaterialTheme.colorScheme.background // رنگ آیکون تیره باشد
@@ -182,7 +203,7 @@ fun FullPlayerScreen(navController: NavController) {
                         }
 
                         IconButton(onClick = { viewModel.skipToNext() }, enabled = state.isReady) {
-                            Icon(Icons.Filled.Close, contentDescription = "Next", modifier = Modifier.size(36.dp), tint = Color.White)
+                            Icon(Icons.Filled.SkipNext, contentDescription = "Next", modifier = Modifier.size(36.dp), tint = Color.White)
                         }
                     }
                 }
