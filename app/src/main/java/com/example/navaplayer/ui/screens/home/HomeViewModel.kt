@@ -18,6 +18,10 @@ class HomeViewModel(
     private val _audioList = mutableStateListOf<Audio>()
     val audioList: List<Audio> get() = _audioList
 
+    init {
+        loadAudioFiles()
+    }
+
     fun loadAudioFiles() {
         viewModelScope.launch(Dispatchers.IO) {
             val audios = repository.getAudioFiles()

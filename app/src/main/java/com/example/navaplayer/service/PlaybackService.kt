@@ -1,6 +1,7 @@
 package com.example.navaplayer.service
 
 import android.content.Intent
+import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -15,7 +16,15 @@ class PlaybackService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        // ساخت MediaSession برای ارتباط با نوتیفیکیشن بار و کنترل‌های سیستم
+        player.setAudioAttributes(
+            androidx.media3.common.AudioAttributes.Builder()
+                .setUsage(C.USAGE_MEDIA)
+                .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                .build(),
+            true // requestsAudioFocus: مطمئن می‌شویم که فوکوس صدا درخواست شود
+        )
+
+        // ۲. ساخت MediaSession
         mediaSession = MediaSession.Builder(this, player).build()
     }
 

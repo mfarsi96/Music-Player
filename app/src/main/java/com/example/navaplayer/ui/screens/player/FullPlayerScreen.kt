@@ -92,12 +92,30 @@ fun FullPlayerScreen(navController: NavController) {
                         // کاور اصلی: پس‌زمینه باید کمی متمایز باشد
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                     ) {
-                        AsyncImage(
-                            model = state.currentAudio?.coverUri,
-                            contentDescription = "Album Cover",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
+
+                        val coverUri = state.currentAudio?.coverUri
+                        if (coverUri != null) {
+                            AsyncImage(
+                                model = state.currentAudio?.coverUri,
+                                contentDescription = "Album Cover",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        else{
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.KeyboardArrowUp, // آیکون پیش‌فرض
+                                    contentDescription = "No Cover",
+                                    modifier = Modifier.size(100.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))

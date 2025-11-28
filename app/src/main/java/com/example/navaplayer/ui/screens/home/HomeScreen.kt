@@ -1,6 +1,7 @@
 package com.example.navaplayer.ui.screens.home
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.navaplayer.data.model.Audio
 import org.koin.androidx.compose.koinViewModel
 
@@ -24,23 +26,35 @@ fun HomeScreen() {
     val audioList = viewModel.audioList
     val context = LocalContext.current
 
-    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_AUDIO
-    } else {
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    }
-    val launcher = rememberLauncherForActivityResult(
+    val permission = Manifest.permission.READ_EXTERNAL_STORAGE
+
+    // لانچر برای درخواست مجوز
+    val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
+        // این بلاک بعد از انتخاب کاربر اجرا می‌شود
         if (isGranted) {
+            // اگر کاربر دسترسی داد، آهنگ‌ها را بارگذاری کن
             viewModel.loadAudioFiles()
+        } else {
+            // اگر دسترسی رد شد، یک پیام به کاربر نشان بده (مثلاً Snackbar)
+            // فعلاً فقط لاگ می‌کنیم
+            println("Permission denied. Cannot load music.")
         }
     }
 
+    // NEW: چک کردن دسترسی و بارگذاری داده در LaunchedEffect
     LaunchedEffect(Unit) {
-        // اینجا ساده گرفتیم، در واقعیت باید چک کنی که مجوز داری یا نه
-        // فعلاً فرض میکنیم اگر لیست خالیه درخواست بدیم
-        launcher.launch(permission)
+        // ۱. بررسی وضعیت فعلی دسترسی
+        val currentPermissionStatus = ContextCompat.checkSelfPermission(context, permission)
+
+        if (currentPermissionStatus == PackageManager.PERMISSION_GRANTED) {
+            // اگر دسترسی از قبل داده شده بود، بلافاصله بارگذاری کن
+            viewModel.loadAudioFiles()
+        } else {
+            // اگر دسترسی داده نشده بود، درخواست را اجرا کن
+            permissionLauncher.launch(permission)
+        }
     }
 
     Scaffold(
@@ -59,7 +73,7 @@ fun HomeScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 Text("هیچ آهنگی پیدا نشد یا مجوز داده نشده!")
-                Button(onClick = { launcher.launch(permission) }, modifier = Modifier.padding(top = 60.dp)) {
+                Button(onClick = { permissionLauncher.launch(permission) }, modifier = Modifier.padding(top = 60.dp)) {
                     Text("دریافت مجوز")
                 }
             }
