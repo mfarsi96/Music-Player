@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ fun NavaPlayer() {
 
     Scaffold(
         // استفاده از BottomBar برای نگه داشتن مینی‌پلیر در تمام مسیرها
+        contentWindowInsets = WindowInsets.navigationBars,
         bottomBar = {
             MiniPlayer(navController = navController)
         }
@@ -45,7 +48,7 @@ fun NavaPlayer() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen() 
+                HomeScreen()
             }
             composable(Screen.FullPlayer.route) {
                 FullPlayerScreen(navController = navController)

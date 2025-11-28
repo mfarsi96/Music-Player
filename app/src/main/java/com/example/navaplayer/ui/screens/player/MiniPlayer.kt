@@ -25,13 +25,13 @@ fun MiniPlayer(navController: NavController) {
     val playerState by viewModel.playerState.collectAsState()
 
     // اگر هیچ آهنگی لود نشده باشه، مینی‌پلیر رو نمایش نده
-    if (playerState.currentAudio == null) {
-        return
-    }
+//    if (playerState.currentAudio == null) {
+//        return
+//    }
 
     // استفاده از AnimatedVisibility برای نمایش متحرک مینی‌پلیر
     AnimatedVisibility(
-        visible = true,
+        visible = playerState.currentAudio != null,
         enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
         exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
     ) {
@@ -41,8 +41,7 @@ fun MiniPlayer(navController: NavController) {
                 .clickable {
                     // کلیک روی مینی‌پلیر باز کردن فول‌پلیر
                     navController.navigate(Screen.FullPlayer.route)
-                }
-                .padding(bottom = 0.dp),
+                },
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             elevation = CardDefaults.cardElevation(4.dp)
